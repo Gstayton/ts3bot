@@ -11,6 +11,7 @@ wrapper = (server)->
 		Reset_Flood_Count: ()->
 			wrap.Recent_Commands = 0
 		execute: (err, str, priority, _callback) ->
+			timer = null
 			args = []
 			for arg in arguments
 				args.push(arguments[_i])
@@ -42,7 +43,11 @@ wrapper = (server)->
 				wrap.Recent_Commands++
 			else
 				console.log("Timeout")
-				setTimeout(wrap.execute(), 1000)
+				if !timer?
+					timer = setTimeout(()->
+						wrap.execute()
+						timer = null
+					, 1000)
 		parseStr: (str) ->
 			str.split(' ').join('\\s')
 		sendMsg: (msg) ->
